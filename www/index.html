@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title></title>
+
+    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+    <link href="css/ionic.app.css" rel="stylesheet">
+    -->
+
+    <!-- ionic/angularjs js -->
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+
+    <!-- cordova script (this will be a 404 during development) -->
+    <script src="cordova.js"></script>
+
+    <!-- your app's js -->
+    <script src="js/app.js"></script>
+  </head>
+  <body ng-app="meanstack" ng-controller="maincntrl">
+
+    <ion-pane>
+      <ion-header-bar class="bar-header bar-calm" text-align="center">
+                <!--<h2 class="title">NCB Team Tracker</h2>-->
+      </ion-header-bar>
+        <div class="bar bar-header bar-calm">
+            <buton class="button icon ion-navicon" ng-click="nvg()"></buton>
+                <h1 class="title">NCB Team Tracker</h1>
+            <buton class="button icon ion-home" ng-click="home()"></buton>
+        </div>
+        <div class="bar bar-footer bar-calm">
+        <h1 class="title">@copyright all rights reserved</h1>
+        </div>
+        
+      <ion-content class="has-header">
+            
+            <div class="card">
+                <div class="item">
+                     <label class="item item-input item-stable">
+                        <span class="input-label">Search by Owner:</span>
+                        <input type="text" placeholder="Enter Owner Name" ng-model="searchfield.Owner">
+                      </label>
+                </div>
+                <div class="item">
+                    <label class="item item-input item-stable item-select">
+                        <span class="input-label">Sort By:</span>
+                        <select ng-model="orderfield">
+                            <option value="SrNo" selected>Serial No</option>
+                            <option value="StatusDate">Date</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="item">
+                    <label class="item item-input item-stable">
+                        <span class="input-label">Status Filter:</span>
+                          <select multiple ng-model="useroption">
+                                <option value="closed">Closed</option>
+                                <option value="open">Open</option>
+                                <option value="All">All</option>
+                                <option value="fixed">Fixed</option>
+                            </select>
+                    </label>
+                </div>
+                <div class="item">
+                    <div class="button-bar" text-align="center">
+                        <button class="button button-small button-calm button-outline" ng-click="formsubmit()">
+                            Get Tracker Data
+                        </button>
+                        <button class="button button-small button-calm button-outline" ng-click="addbooks()">
+                            Add Issue
+                        </button>
+                    </div>
+                </div>
+                    <div class="item">
+                    <script type="text/ng-template" id="viewbooks">          
+                        <div class="row header row-header-calm">
+                                        <div class="col">Serial No</div>
+                                        <div class="col col-40">Item</div>
+                                        <div class="col">Owner</div>
+                                        <div class="col">Status Date</div>
+                                        <div class="col">Status</div>
+                                        <div class="col col-1">Edit</div>
+                        </div>
+                                    <div class="row" ng-repeat="i in tracker | status:tracker:useroption | filter:searchfield | orderBy:orderfield">
+                                        <div class="col">{{i.SrNo}}</div>
+                                        <div class="col col-40">{{i.Item}}</div>
+                                        <div class="col">{{i.Owner}}</div>
+                                        <div class="col">{{i.StatusDate}}</div>
+                                        <div class="col">{{i.Status}}</div>
+                                        <div class="col col-1"><button class="button button-small button-calm" ng-click="editrow(i)">Edit</button></div>
+                                </div>
+                        </script>
+                    </div>
+                </div>
+                    <div ng-show="editfields">
+                        <div class="card">
+                                <div class="item item-text-wrap">
+                                    <label class="item  item-input item-stable">
+                                    <span class="input-label">Item</span>
+                                    <input type="text" ng-model="selected.Item">
+                                    </label>
+                                </div>
+                                <div class="item"><label class="item item-input item-stable">
+                                    <span class="input-label">Owner</span>
+                                    <input type="text" ng-model="selected.Owner">
+                                    </label></div>
+                                <div class="item"><label class="item item-input item-stable">
+                                    <span class="input-label">Owner</span>
+                                    <input type="date" ng-model="selected.StatusDate">
+                                    </label></div>
+                                <div class="item"><label class="item item-input item-stable item-select">
+                                    <span class="input-label">Status</span>
+                                    <select ng-model="selected.Status">
+                                        <option value="Closed">Closed</option>
+                                        <option value="Open">Open</option>
+                                        <option value="Duplicate">Duplicate</option>
+                                        <option value="Fixed">Fixed</option>
+                                    </select></label></div>
+                                    <div class="item">
+                                        <p></p><button class="button button-small button-clam" ng-click="save(selected)">Save</button>
+                                        <button class="button button-small button-clam" ng-click="cancel()">
+                                            Cancel</button></p>
+                                    </div>
+                            </div>
+                    </div>
+                    </div>
+    
+            <script type="text/ng-template" id="additem">
+                <div class="card">
+                    <div class="item item-text-wrap">
+                        <label class="item item-input item-stable">
+                            <span class="input-label">Item</span>
+                            <input type="text" placeholder="Item description here" ng-model="newitem.Item">
+                        </label>
+                    </div>
+                    <div class="item">
+                        <label class="item item-input item-stable">
+                            <span class="input-label">Owner</span>
+                            <input type="text" placeholder="Owner Name here" ng-model="newitem.Owner">
+                            </label>
+                    </div>
+                    <div class="item">
+                        <label class="item item-input item-stable">
+                            <span class="input-label">Status Date</span>
+                            <input type="date" placeholder="Owner Name here" ng-model="newitem.StatusDate">
+                            </label>
+                    </div>
+                    <div class="item">
+                        <label class="item item-input item-select item-stable">
+                            <span class="input-label">Status</span>
+                                <select ng-model="newitem.Status">
+                                 <option value="Closed">Closed</option>
+                                 <option value="Open">Open</option>
+                                 <option value="Duplicate">Duplicate</option>
+                                </select>
+                            </label>
+                    </div>
+                    <div class="item">
+                      <button class="button button-small button-clam" ng-click="saveitem(newitem)">Save</button>
+                    </div>
+                </div>
+            </script> 
+          
+
+    <div ui-view=""></div> 
+      
+    </ion-content>
+      </ion-pane>
+    </body>
+  
+</html>
